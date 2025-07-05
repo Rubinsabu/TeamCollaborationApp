@@ -1,6 +1,7 @@
 import Project from '../models/Project.js';
 import Task from '../models/Task.js';
 import User from '../models/User.js';
+import ActivityLog from '../models/ActivityLog.js'
 
 export const createProject = async(req,res)=>{
     try{
@@ -11,6 +12,35 @@ export const createProject = async(req,res)=>{
         console.log('Failed project creation');
         res.status(500).json({ error: err.message });
     }
+};
+
+export const deleteProject = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    if (project.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Only the project owner can delete this project' });
+    }
+    
+    const tasks = await Task.find({ projectId });
+    // Delete all related activity logs for those tasks
+    const taskIds = tasks.map(t => t._id);
+    await ActivityLog.deleteMany({ taskId: { $in: taskIds } });
+
+    await Task.deleteMany({ projectId });
+    await Project.findByIdAndDelete(projectId);
+    
+
+    res.status(200).json({ message: 'Project deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting project:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 export const addMember = async(req,res)=>{

@@ -6,7 +6,10 @@ import AddTaskModal from "../components/AddTaskModal";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTasksByProject,updateTaskInState } from "../features/tasks/tasksSlice";
 import { isUserAdmin } from "../features/projects/projectsSlice";
-import {FaEye, FaEdit} from 'react-icons/fa';
+import {FaEye, FaEdit, FaHistory} from 'react-icons/fa';
+import EditTaskModal from "../components/EditTaskModal";
+import ShowTaskDetailModal from "../components/ShowTaskDetailModal";
+import ShowActivityModal from '../components/ShowActivityModal'
 
 const columns = ['To Do', 'In Progress', 'Done'];
 
@@ -15,6 +18,9 @@ const KanbanBoard = ({ projectId }) => {
   const tasksByStatus = useSelector(state => state.task.tasksByStatus);
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+  const [viewTask, setViewTask] = useState(null);
+  const [activityTaskId, setActivityTaskId] = useState(null);
 
   const projectState = useSelector(state => state.project);
   const authState = useSelector(state => state.auth);
@@ -87,8 +93,9 @@ const KanbanBoard = ({ projectId }) => {
                                 <p className="text-sm text-gray-500">{task.assignedTo?.name}</p>
                               </div>
                               <div className="flex space-x-2 mt-1 text-gray-600">
-                                <FaEye className="cursor-pointer hover:text-blue-600" title="View Task" />
-                                <FaEdit className="cursor-pointer hover:text-green-600" title="Edit Task" />
+                                <FaHistory className="text-gray-600 cursor-pointer hover:text-blue-600" title="Task History" onClick={() => setActivityTaskId(task._id)}/>
+                                <FaEye className="cursor-pointer hover:text-blue-600" title="View Task" onClick={() => setViewTask(task)}/>
+                                <FaEdit className="cursor-pointer hover:text-green-600" title="Edit Task" onClick={() => setEditingTask(task)}/>
                               </div>
                           </div> 
                       </div>
@@ -103,7 +110,29 @@ const KanbanBoard = ({ projectId }) => {
       </DragDropContext>
     </div>
     <div>
+
+    {viewTask && (
+  <ShowTaskDetailModal task={viewTask} onClose={() => setViewTask(null)} />
+    )}
+ 
     {/* Show Add Task button only for admins */}
+    {editingTask && (
+        <EditTaskModal
+          task={editingTask}
+          onClose={() => setEditingTask(null)}
+          onUpdated={(updatedTask) => {
+          dispatch(updateTaskInState(updatedTask));
+          emitTaskUpdated(projectId, updatedTask);
+        }}
+        />
+      )}
+
+      {activityTaskId && (
+            <ShowActivityModal
+                taskId={activityTaskId}
+                onClose={() => setActivityTaskId(null)}
+            />
+        )}
     {isAdmin && (
       <div className="grid grid-cols-3 gap-4 mt-2">
         <button

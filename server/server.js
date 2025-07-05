@@ -10,6 +10,8 @@ import taskRoutes from './routes/taskRoutes.js';
 import {setupSocket} from './socket/socket.js';
 import connectDB from './config/db.js';
 import {protect} from './middleware/authMiddleware.js';
+import activityLogRoutes from './routes/activityLogRoutes.js';
+
 
 dotenv.config();
 
@@ -30,6 +32,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', protect,projectRoutes);
 app.use('/api/tasks', protect,taskRoutes);
+app.use('/api/activity-log', protect ,activityLogRoutes);
 
 connectDB().then(() => {
   server.listen(process.env.PORT || 5000, () => console.log('Server running'));

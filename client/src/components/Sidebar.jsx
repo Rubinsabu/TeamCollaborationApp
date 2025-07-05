@@ -4,6 +4,10 @@ import { fetchProjects,selectProject,fetchProjectDetails } from '../features/pro
 import CreateProjectModal from './CreateProjectModal';
 import AddMemberModal from './AddMemberModal';
 import { isUserAdmin } from '../features/projects/projectsSlice';
+import {FaTimes} from 'react-icons/fa';
+import {toast, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from '../api/axiosInstance'
 
 const Sidebar = () => {
 
@@ -24,6 +28,22 @@ const Sidebar = () => {
 
   const isAdmin = useSelector(isUserAdmin);
 
+  const handleProjectDelete = async (projectId) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this project? This action cannot be undone.');
+  
+    if (!confirmDelete) return;
+  
+    try {
+      await axios.delete(`/projects/${projectId}`);
+      toast.success('Project deleted successfully');
+      dispatch(fetchProjects()); // Refresh the list
+    } catch (error) {
+      console.error('Delete failed:', error);
+      toast.error('Failed to delete project');
+    }
+  };
+
+
   return (
     <aside className="bg-gray-100 w-64 h-full p-4 border-r">
       <h2 className="font-bold text-lg mb-4">Projects</h2>
@@ -31,12 +51,20 @@ const Sidebar = () => {
         {projects.map((proj) => (
           <li
             key={proj._id}
-            className={`cursor-pointer p-2 rounded mb-1 hover:bg-gray-700 hover:text-white ${
+            className={`flex justify-between items-center cursor-pointer p-2 rounded mb-1 hover:bg-gray-700 hover:text-white ${
               selectedProject?._id === proj._id ? 'bg-gray-700 text-white' : ''
             }`}
             onClick={() => handleSelect(proj)}
           >
             {proj.name}
+              <FaTimes 
+              className="text-gray-500 hover:text-red-500 cursor-pointer ml-2" 
+              title="Close"
+              onClick={(e) => {
+                e.stopPropagation(); 
+                handleProjectDelete(proj._id); 
+              }}
+              />
           </li>
         ))}
       </ul>
@@ -73,6 +101,7 @@ const Sidebar = () => {
       )}
 
   {showMemberModal && <AddMemberModal onClose={() => setShowMemberModal(false)} />}
+  <ToastContainer position="top-right" />
     </aside>
   )
 }

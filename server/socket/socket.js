@@ -4,7 +4,7 @@ export const setupSocket = (io) => {
   ioInstance = io;
 
   io.on('connection', (socket) => {
-    console.log('🟢 User connected:', socket.id);
+    console.log('User connected:', socket.id);
 
     socket.on('joinProject', (projectId) => {
       socket.join(projectId);
@@ -16,21 +16,21 @@ export const setupSocket = (io) => {
       console.log(`Socket ${socket.id} left project ${projectId}`);
     });
 
-    // 🔥 Add this to handle frontend emit
+    
     socket.on('taskUpdated', (projectId, task) => {
       if (projectId && task) {
         socket.to(projectId).emit('taskUpdated', task); // Broadcast to others
-        console.log(`📢 Task updated in project ${projectId}:`, task.title);
+        console.log(`Task updated in project ${projectId}:`, task.title);
       }
     });
 
     socket.on('disconnect', () => {
-      console.log('🔴 User disconnected:', socket.id);
+      console.log('User disconnected:', socket.id);
     });
   });
 };
 
-// Optional utility if you want to emit from controller directly
+
 export const emitTaskUpdate = (projectId, task) => {
   if (ioInstance && projectId && task) {
     ioInstance.to(projectId).emit('taskUpdated', task);
