@@ -115,7 +115,7 @@ const KanbanBoard = ({ projectId }) => {
   <ShowTaskDetailModal task={viewTask} onClose={() => setViewTask(null)} />
     )}
  
-    {/* Show Add Task button only for admins */}
+    
     {editingTask && (
         <EditTaskModal
           task={editingTask}

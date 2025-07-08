@@ -17,7 +17,7 @@ export const createTask = async (req, res) => {
 export const updateTask = async (req, res) => {
     try {
       const { id } = req.params;
-      const updatedTask = await Task.findByIdAndUpdate(id, req.body, { new: true });
+      const updatedTask = await Task.findByIdAndUpdate(id, req.body, { new: true }).populate('assignedTo', 'name email');
   
       const log = new ActivityLog({
         taskId: id,

@@ -10,11 +10,28 @@ const LoginPage = () => {
   const { loading, error } = useSelector(state => state.auth);
 
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [emailError, setEmailError] = useState('');
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'email') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (value && !emailRegex.test(value)) {
+        setEmailError('Please enter a valid email address');
+      } else {
+        setEmailError('');
+      }
+    }
+
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (emailError) return;
+
     const result = await dispatch(login(formData));
     if (result.meta.requestStatus === 'fulfilled') navigate('/');
   };
@@ -33,6 +50,9 @@ const LoginPage = () => {
           onChange={handleChange}
           required
         />
+        {/* Show email validation error if any */}
+        {emailError && <p className="text-red-500 text-sm mb-4">{emailError}</p>}
+
         <input
           type="password"
           name="password"

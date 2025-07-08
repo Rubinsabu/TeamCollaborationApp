@@ -92,14 +92,14 @@ export const removeMember = async (req, res) => {
   
       const projects = await Project.find({
         'members.user': userId
-      }).select('name members');
+      }).select('name members'); //project name and members
   
       const filteredProjects = projects.map((project) => {
         const member = project.members.find(m => m.user.toString() === userId.toString());
         return {
           _id: project._id,
           name: project.name,
-          role: member.role // 'Admin' or 'Member'
+          role: member.role // role field added of requested User
         };
       });
   
@@ -115,7 +115,7 @@ export const removeMember = async (req, res) => {
     try {
       const { projectId } = req.params;
   
-      const tasks = await Task.find({ projectId }).populate('assignedTo', 'name');
+      const tasks = await Task.find({ projectId }).populate('assignedTo', 'name');// username also added
   
       res.status(200).json(tasks);
     } catch (err) {

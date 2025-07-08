@@ -100,7 +100,9 @@ const Sidebar = () => {
       </button>
       )}
 
-  {showMemberModal && <AddMemberModal onClose={() => setShowMemberModal(false)} />}
+  {showMemberModal && <AddMemberModal onClose={() => setShowMemberModal(false)} onMemberAdded={() => {
+      dispatch(fetchProjectDetails(selectedProject._id));
+    }} />}
   <ToastContainer position="top-right" />
     </aside>
   )

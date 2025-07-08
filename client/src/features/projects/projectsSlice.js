@@ -1,5 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from '../../api/axiosInstance';
+import { logout } from '../auth/authSlice';
 
 export const fetchProjects = createAsyncThunk('projects/fetch', async () => {
     const res = await axios.get('/projects');
@@ -53,6 +54,12 @@ export const fetchProjects = createAsyncThunk('projects/fetch', async () => {
             ...fetchedDetails,
             role: role  // Preserve the user's role
           };
+        })
+        .addCase(logout, (state) => {
+          state.projects = [];
+          state.selectedProject = null;
+          state.loading = false;
+          state.error = null;
         });
     }
   });

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from '../api/axiosInstance';
 import { useSelector } from 'react-redux';
 
-const AddMemberModal = ({ onClose }) => {
+const AddMemberModal = ({ onClose, onMemberAdded }) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -22,6 +22,10 @@ const AddMemberModal = ({ onClose }) => {
       const res = await axios.post(`/projects/${selectedProject._id}/add-member`, { email });
       setSuccess(res.data.message || 'Member added successfully');
       setEmail('');
+
+      if (onMemberAdded) {
+        onMemberAdded();  //notify parent to refresh project details
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to add member');
     }

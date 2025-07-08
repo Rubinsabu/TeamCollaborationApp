@@ -9,7 +9,7 @@ const AddTaskModal = ({ onClose }) => {
   const [title, setTitle] = useState('');
   const dispatch = useDispatch();
   const { selectedProject } = useSelector(state => state.project);
-  const { user } = useSelector(state => state.auth); // Assume auth slice stores user info
+  const { user } = useSelector(state => state.auth); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
