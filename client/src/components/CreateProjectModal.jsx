@@ -15,7 +15,8 @@ const CreateProjectModal = ({ onClose}) => {
 
     try {
       const res = await axios.post('/projects', { name });
-      dispatch(addProject(res.data));
+      dispatch(addProject({ ...res.data, role: 'Admin' }));
+
       onClose();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create project');
