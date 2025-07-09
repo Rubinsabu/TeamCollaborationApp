@@ -7,6 +7,7 @@ export const login = createAsyncThunk('auth/login', async (credentials, thunkAPI
   try {
     const res = await axios.post('/auth/login', credentials);
     sessionStorage.setItem(tokenKey, res.data.token);
+    sessionStorage.setItem('userId', res.data.user.id);
     return res.data.user;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Login failed');
@@ -17,6 +18,7 @@ export const register = createAsyncThunk('auth/register', async (userData, thunk
   try {
     const res = await axios.post('/auth/register', userData);
     sessionStorage.setItem(tokenKey, res.data.token);
+    sessionStorage.setItem('userId', res.data.user.id);
     return res.data.user;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Registration failed');
@@ -33,6 +35,7 @@ const authSlice = createSlice({
     reducers: {
       logout: (state) => {
         sessionStorage.removeItem(tokenKey);
+        sessionStorage.removeItem('userId');
         state.user = null;
       }
     },

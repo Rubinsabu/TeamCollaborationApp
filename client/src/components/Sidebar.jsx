@@ -43,6 +43,19 @@ const Sidebar = () => {
     }
   };
 
+  const handleRemoveMember = async (userId) => {
+    const confirmRemove = window.confirm('Are you sure you want to remove this member?');
+    if (!confirmRemove) return;
+  
+    try {
+      await axios.put(`/projects/${selectedProject._id}/remove-member`, { userId });
+      toast.success('Member removed successfully');
+      dispatch(fetchProjectDetails(selectedProject._id)); // Re-fetch updated project details
+    } catch (err) {
+      console.error('Failed to remove member:', err);
+      toast.error('Failed to remove member');
+    }
+  };
 
   return (
     <aside className="bg-gray-100 w-64 h-full p-4 border-r">
@@ -83,8 +96,18 @@ const Sidebar = () => {
       <ul className="space-y-1">
       {selectedProject?.members && selectedProject.members.length > 0 ? (
       selectedProject.members.map((member) => (
-        <li key={member.user?._id || member.user} className="text-sm">
+        <li key={member.user?._id || member.user} className="text-sm flex justify-between items-center">
+          <span>
           👤 {member.user?.name || member.name} ({member.role})
+          </span>
+          {isAdmin && member.user?._id !== sessionStorage.getItem('userId') && (
+        <button
+          className="text-red-500 text-lg hover:text-red-700"
+          title="Remove member"
+          onClick={() => handleRemoveMember(member.user?._id || member.user)}
+        >
+          &minus;
+        </button>)}
       </li>
       ))
       ) : (
